@@ -1,4 +1,4 @@
-# Generic cars
+# Genetic cars
 ## O projekcie
 Jest to projekt semestralny z przedmiotu ALHE realizowanym w semestrze 2018/2019Z. 
 Celem projektu jest wykorzystanie algorytmów genetycznych w celu stworzenia jak najlepszego pojazdu dwukołowego.
@@ -12,7 +12,7 @@ Przykładowa wizualizacja symulacji: http://boxcar2d.com/. Do implementacji proj
 ## Pojazd
 Pojazd będzie się składał z:
 * dwóch kół, niekoniecznie o tych samych rozmiarach, lecz poruszających się z tą samą prędkością kątową;
-* trójkątów łączących koła i tworzących pojazd, ustalamy maksymalną ilość trójkątów na 5;
+* trójkątów łączących koła i tworzących pojazd, ustalamy maksymalną ilość trójkątów na 5.
 
 ## Trasy
 W ramach projektu stworzymy 3 trasy. 
@@ -55,7 +55,7 @@ Typy mutacji:
 * gaussowska.
 
 
-### Skucesja 
+### Sukcesja 
 Wykorzystamy zastępowanie elitarne.
 
 ## Testowanie
