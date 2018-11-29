@@ -25,6 +25,17 @@ Każdy przejazd będzie miał ograniczony czas do założonego limitu, nie więk
 Wykorzystamy gotową bibliotekę implementującą algorytmy genetyczne - `DEAP`.
 
 ### Geny
+Zostaną zaimplementowane poniższe geny:
+* koło tylne(współrzędna x, współrzędna y, promień)
+* koło przednie(współrzędna x, współrzędna y, promień)
+* prędkość kątowa kół
+* zbiór trójkątów tworzących karoserię, maksymalnie **5**:
+  * trójkąt - zbiór trzech punktów określonych parą (współrzędna x, współrzędna y)
+  * trójkąty bedą połączone ze sobą metodą `Distance Joint` - odległość dwóch punktów z dwóch trójkątów będzie stała. 
+
+**Poszczególne wartości genów zostaną znormalizowane do zakresu [0,1].**
+
+**Składowe samochodu będą połączone na stałe - nie dopuszczamy sytuacji w której samochód ulegnie zniszczeniu.**
 
 ### Selekcja
 Wykorzystane typy selekcji:
