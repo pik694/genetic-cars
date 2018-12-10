@@ -13,3 +13,7 @@ def denormalize_coordinate(coordinate):
 
 def denormalize_frequency(frequency):
     return frequency * MAX_FREQUENCY
+
+
+def denormalize_triangle_usage(usage):
+    return usage >= 0.5

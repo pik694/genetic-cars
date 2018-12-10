@@ -18,18 +18,16 @@ class CarFactoryTests(unittest.TestCase):
         self.assertEqual(((60, 40), 5), parse_wheel(wheel))
 
     def test_parse_triangle(self):
-        triangle = [0.6, 0.4, 0.6, 0.4, 0.6, 0.4]
+        triangle = [0.5, 0.6, 0.4, 0.6, 0.4, 0.6, 0.4]
         self.assertEqual(((60, 40), (60, 40), (60, 40)),
                          parse_triangle(triangle))
 
     def test_parse_triangles(self):
-        triangles = [0.6, 0.4, 0.6, 0.4, 0.6, 0.4,
-                     0.4, 0.6, 0.4, 0.6, 0.4]
-
-        with self.assertRaises(ValueError):
-            parse_triangles(triangles)
-
-        triangles.append(0.6)
+        triangles = [0.5, 0.6, 0.4, 0.6, 0.4, 0.6, 0.4,
+                     0.3, 0.4, 0.6, 0.4, 0.6, 0.4, 0.6,
+                     0.4, 0.6, 0.4, 0.6, 0.4, 0.6, 0.4,
+                     0.7, 0.4, 0.6, 0.4, 0.6, 0.4, 0.6,
+                     0.2, 0.6, 0.4, 0.6, 0.4, 0.6, 0.4]
 
         result = parse_triangles(triangles)
         self.assertEqual(len(result), 2)
@@ -37,7 +35,12 @@ class CarFactoryTests(unittest.TestCase):
         self.assertEqual(((40.0, 60.0), (40.0, 60.0), (40.0, 60.0)), result[1])
 
     def test_parse_genes(self):
-        genes = [0.6, 0.4, 0.5, 0.4, 0.6, 1, 0.6, 0.6, 0.4, 0.6, 0.4, 0.6, 0.4]
+        genes = [0.6, 0.4, 0.5, 0.4, 0.6, 1.0, 0.6,
+                 0.3, 0.4, 0.6, 0.4, 0.6, 0.4, 0.6,
+                 0.4, 0.6, 0.4, 0.6, 0.4, 0.6, 0.4,
+                 0.1, 0.4, 0.6, 0.4, 0.6, 0.4, 0.6,
+                 0.2, 0.6, 0.4, 0.6, 0.4, 0.6, 0.4,
+                 0.5, 0.6, 0.4, 0.6, 0.4, 0.6, 0.4]
 
         left_wheel, right_wheel, frequency, triangles = \
             parse_genes(genes)

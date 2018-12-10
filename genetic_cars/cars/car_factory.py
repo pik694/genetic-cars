@@ -1,6 +1,9 @@
 from genetic_cars.normalization.denormalizer import denormalize_coordinate, \
     denormalize_frequency, \
-    denormalize_radius
+    denormalize_radius, \
+    denormalize_triangle_usage
+
+from . import TRIANGLE_GENES, TRIANGLES
 
 
 def parse_frequency(gene):
@@ -26,22 +29,24 @@ def parse_point(genes):
 
 
 def parse_triangle(genes):
+    if denormalize_triangle_usage(genes[0]) is False:
+        return None
+
     triangle = (
-        parse_point(genes[0:2]),
-        parse_point(genes[2:4]),
-        parse_point(genes[4:6])
+        parse_point(genes[1:3]),
+        parse_point(genes[3:5]),
+        parse_point(genes[5:7])
     )
 
     return triangle
 
 
 def parse_triangles(genes):
-    if len(genes) % 6 != 0:
-        raise ValueError('Wrong amount of coordinates for triangles: ' + str(len(genes)))
-
     triangles = []
-    for i in range(0, int(len(genes) / 6)):
-        triangles.append(parse_triangle(genes[i * 6:(i + 1) * 6]))
+    for i in range(0, TRIANGLES):
+        triangle = parse_triangle(genes[i * TRIANGLE_GENES:(i + 1) * TRIANGLE_GENES])
+        if triangle is not None:
+            triangles.append(triangle)
 
     return triangles
 
