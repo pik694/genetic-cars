@@ -1,3 +1,8 @@
+"""
+Project from ALHE course
+Topic: Generate the best car
+"""
+
 from os import path
 import sys
 
