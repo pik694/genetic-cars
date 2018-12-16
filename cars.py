@@ -2,7 +2,6 @@
 
 import argparse
 
-from genetic_cars.algorithm import AlgorithmError
 from genetic_cars.algorithm.algorithm import run
 
 PARSER = argparse.ArgumentParser(description='Semestral project from ALHE course',
@@ -17,8 +16,6 @@ PARSER.add_argument('crossover', type=int, default=[1, 2],
                     help='Crossover type')
 PARSER.add_argument('mutation', type=int, default=[1, 2],
                     help='Mutation type')
-PARSER.add_argument('succession', type=int, default=[1],
-                    help='Succession type')
 
 
 def main():
@@ -32,9 +29,8 @@ def main():
             route=args.route,
             selection=args.selection,
             crossover=args.crossover,
-            mutation=args.mutation,
-            succession=args.succession)
-    except AlgorithmError as err:
+            mutation=args.mutation)
+    except ValueError as err:
         print(str(err))
 
 

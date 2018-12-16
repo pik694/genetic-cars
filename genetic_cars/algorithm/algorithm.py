@@ -4,7 +4,9 @@ import random
 
 from deap import tools
 
-from . import TOOLBOX, MUTATION_PROBABILITY
+from . import TOOLBOX, MUTATION_PROBABILITY, \
+    ONE_POINT_CROSS, UNIFORM_CROSS, BIT_MUT, GAUSSIAN_MUT, \
+    CXPB, MUTPB, TOURNAMENT_SEL, ROULETTE_SEL, BEST_SEL
 
 
 def eval_best_car(individual, route):
@@ -14,6 +16,7 @@ def eval_best_car(individual, route):
     :param route: selected route
     :return: performance of an individual
     """
+    # TODO
     return sum(individual),
 
 
@@ -21,9 +24,12 @@ def register_evaluation(route):
     """
     Register evaluation method
     :param route: route type
-    :raise RegistrationError: in case of undefined route
+    :raise ValueError: in case of undefined route
     :return: None
     """
+    if route not in [1, 2, 3]:
+        raise ValueError("Invalid route: {}".format(route))
+
     TOOLBOX.register("evaluate", eval_best_car, route=route)
 
 
@@ -35,7 +41,12 @@ def register_crossover(crossover):
     :return: None
     """
 
-    TOOLBOX.register("mate", tools.cxOnePoint)
+    if crossover == ONE_POINT_CROSS:
+        TOOLBOX.register("mate", tools.cxOnePoint)
+    elif crossover == UNIFORM_CROSS:
+        TOOLBOX.register("mate", tools.cxUniform, indpb=0.5)
+    else:
+        raise ValueError("Invalid crossover: {}".format(crossover))
 
 
 def register_mutation(mutation):
@@ -46,86 +57,77 @@ def register_mutation(mutation):
     :return: None
     """
 
-    TOOLBOX.register("mutate", tools.mutFlipBit, indpb=MUTATION_PROBABILITY)
+    if mutation == BIT_MUT:
+        TOOLBOX.register("mutate", tools.mutFlipBit, indpb=MUTATION_PROBABILITY)
+    elif mutation == GAUSSIAN_MUT:
+        TOOLBOX.register("mutate", tools.mutGaussian, mu=0, sigma=1, indpb=MUTATION_PROBABILITY)
+    else:
+        raise ValueError("Invalid mutation: {}".format(mutation))
 
 
-def register_selection(selection):
+def register_selection(population_size, selection):
     """
     Register operator for selecting individuals for breeding the next
     generation
+    :param population_size: size of population
     :param selection: selection type
     :raise RegistrationError: in case of undefined selection type
     :return: None
     """
-
-    TOOLBOX.register("select", tools.selTournament, tournsize=3)
-
-
-def register_succession(succession):
-    """
-    Register succession
-    :param succession: succession type
-    :raise RegistrationError: in case of undefined succession type
-    :return: None
-    """
+    if selection == TOURNAMENT_SEL:
+        TOOLBOX.register("select", tools.selTournament, tournsize=int(population_size * 0.5))
+    elif selection == ROULETTE_SEL:
+        TOOLBOX.register("select", tools.selRoulette)
+    elif selection == BEST_SEL:
+        TOOLBOX.register("select", tools.selBest)
 
 
-def init_toolbox(route, selection, crossover, mutation, succession):
+def init_toolbox(population_size, route, selection, crossover, mutation):
     """
     Initialize genetic algorithm
+    :param population_size: size of population
     :param route: route type
     :param selection: selection type
     :param crossover: crossover type
     :param mutation: mutation type
-    :param succession: succession type
     :return: None
     """
 
     register_evaluation(route)
-    register_selection(selection)
+    register_selection(population_size, selection)
     register_crossover(crossover)
     register_mutation(mutation)
-    register_succession(succession)
 
 
-def run(population_size, route, selection, crossover, mutation, succession):
-    init_toolbox(selection=selection, crossover=crossover,
-                 mutation=mutation, succession=succession,
-                 route=route)
+# pylint: disable=no-member
+def run(population_size, route, selection, crossover, mutation):
+    """
+    Genetic algorithm that prepare the best car
+    :param population_size: size of each population
+    :param route: route type
+    :param selection: selection type
+    :param crossover: crossover type
+    :param mutation: mutation type
+    :return: None
+    """
 
-    # create an initial population of 300 individuals (where
-    # each individual is a list of integers)
-    pop = TOOLBOX.population(n=population_size)
+    init_toolbox(population_size=population_size,
+                 selection=selection, crossover=crossover,
+                 mutation=mutation, route=route)
 
-    # CXPB  is the probability with which two individuals
-    #       are crossed
-    #
-    # MUTPB is the probability for mutating an individual
-    CXPB, MUTPB = 0.5, 0.2
-
-    print("Start of evolution")
-
-    # Evaluate the entire population
-    fitnesses = list(map(TOOLBOX.evaluate, pop))
-    for ind, fit in zip(pop, fitnesses):
+    population = TOOLBOX.population(n=population_size)
+    fitnesses = list(map(TOOLBOX.evaluate, population))
+    for ind, fit in zip(population, fitnesses):
         ind.fitness.values = fit
 
-    print("  Evaluated %i individuals" % len(pop))
-
-    # Extracting all the fitnesses of
-    fits = [ind.fitness.values[0] for ind in pop]
-
-    # Variable keeping track of the number of generations
-    g = 0
+    print("  Evaluated %i individuals" % len(population))
 
     # Begin the evolution
-    while g < 1000:
-        # A new generation
-        g = g + 1
-        print("-- Generation %i --" % g)
+    for g in range(0, 1000):
 
+        print(g)
         # Select the next generation individuals
-        offspring = TOOLBOX.select(pop, len(pop))
+        offspring = TOOLBOX.select(population, len(population))
         # Clone the selected individuals
         offspring = list(map(TOOLBOX.clone, offspring))
 
@@ -154,25 +156,13 @@ def run(population_size, route, selection, crossover, mutation, succession):
         for ind, fit in zip(invalid_ind, fitnesses):
             ind.fitness.values = fit
 
-        print("  Evaluated %i individuals" % len(invalid_ind))
-
         # The population is entirely replaced by the offspring
-        pop[:] = offspring
+        population[:] = offspring
 
         # Gather all the fitnesses in one list and print the stats
-        fits = [ind.fitness.values[0] for ind in pop]
+        fits = [ind.fitness.values[0] for ind in population]
 
-        length = len(pop)
-        mean = sum(fits) / length
-        sum2 = sum(x * x for x in fits)
-        std = abs(sum2 / length - mean ** 2) ** 0.5
-
-        print("  Min %s" % min(fits))
         print("  Max %s" % max(fits))
-        print("  Avg %s" % mean)
-        print("  Std %s" % std)
 
-    print("-- End of (successful) evolution --")
-
-    best_ind = tools.selBest(pop, 1)[0]
+    best_ind = tools.selBest(population, 1)[0]
     print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
