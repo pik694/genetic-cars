@@ -16,3 +16,7 @@ class DenormalizerTests(unittest.TestCase):
     def test_denormalize_frequency(self):
         frequency = 0.5
         self.assertEqual(MAX_FREQUENCY * frequency, denormalize_frequency(frequency))
+
+    def test_denormalize_triangle_usage(self):
+        self.assertFalse(denormalize_triangle_usage(0.49))
+        self.assertTrue(denormalize_triangle_usage(0.5))
