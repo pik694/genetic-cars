@@ -8,14 +8,16 @@ PARSER = argparse.ArgumentParser(description='Semestral project from ALHE course
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 PARSER.add_argument('population', type=int,
                     help='Population size')
-PARSER.add_argument('route', type=int, default=[1, 2, 3],
+PARSER.add_argument('route', type=int,
                     help='Route type')
-PARSER.add_argument('selection', type=int, default=[1, 2, 3],
+PARSER.add_argument('selection', type=int,
                     help='Selection type')
-PARSER.add_argument('crossover', type=int, default=[1, 2],
+PARSER.add_argument('crossover', type=int,
                     help='Crossover type')
-PARSER.add_argument('mutation', type=int, default=[1, 2],
+PARSER.add_argument('mutation', type=int,
                     help='Mutation type')
+PARSER.add_argument("--file", default="evolution.json",
+                    help="file to save populations")
 
 
 def main():
@@ -29,7 +31,8 @@ def main():
             route=args.route,
             selection=args.selection,
             crossover=args.crossover,
-            mutation=args.mutation)
+            mutation=args.mutation,
+            file=args.file)
     except ValueError as err:
         print(str(err))
 
