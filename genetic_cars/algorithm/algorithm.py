@@ -6,9 +6,11 @@ import random
 
 from deap import tools
 
+from genetic_cars.cars.car_framework import CarFramework
 from . import TOOLBOX, MUTATION_PROBABILITY, \
     ONE_POINT_CROSS, UNIFORM_CROSS, BIT_MUT, GAUSSIAN_MUT, \
-    CXPB, MUTPB, TOURNAMENT_SEL, ROULETTE_SEL, BEST_SEL, SELECTION
+    CXPB, MUTPB, TOURNAMENT_SEL, ROULETTE_SEL, BEST_SEL, \
+    SELECTION
 
 
 def is_even(number):
@@ -77,12 +79,12 @@ def save_population(generation, population, file):
 def eval_best_car(individual, route):
     """
     Perform given individual
+    :param route: route type
     :param individual: car genotype
-    :param route: selected route
     :return: performance of an individual
     """
-    # TODO
-    return sum(individual), 100
+    car_framework = CarFramework(route)
+    return car_framework.perform(individual)
 
 
 def register_evaluation(route):
@@ -275,19 +277,12 @@ def run(population_size, route, selection, crossover, mutation, file):
                                   selection=selection, crossover=crossover,
                                   mutation=mutation, route=route)
 
-    try:
-        while True:
-            save_population(generation, population, file)
-
-            bests, offspring = do_selection(population)
-            offspring = do_crossover(offspring)
-            offspring = do_mutation(offspring)
-            offspring = do_evaluation(offspring)
-
-            generation, population[:] = generation + 1, offspring + bests
-
-            best_ind = tools.selBest(population, 1)[0]
-            print("Best score: {}".format(best_ind.fitness.values[0]))
-
-    except KeyboardInterrupt:
-        print("Car generation stopped!")
+    while True:
+        save_population(generation, population, file)
+        bests, offspring = do_selection(population)
+        offspring = do_crossover(offspring)
+        offspring = do_mutation(offspring)
+        offspring = do_evaluation(offspring)
+        generation, population[:] = generation + 1, offspring + bests
+        best_ind = tools.selBest(population, 1)[0]
+        print("Best score: {}".format(best_ind.fitness.values[0]))

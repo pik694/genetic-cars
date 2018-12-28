@@ -35,6 +35,8 @@ def main():
             file=args.file)
     except ValueError as err:
         print(str(err))
+    except KeyboardInterrupt:
+        print("\nCar generation stopped!")
 
 
 if __name__ == "__main__":
