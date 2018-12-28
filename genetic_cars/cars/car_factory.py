@@ -120,7 +120,7 @@ def create_car(genes, world):
     return car
 
 
-# pylint: disable=too-few-public-methods
+# pylint: disable=too-few-public-methods, too-many-instance-attributes
 class Car:
     """
     Represents car created in Box2d library

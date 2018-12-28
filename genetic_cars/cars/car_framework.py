@@ -11,7 +11,7 @@ from . import MAX_DURATION, MAX_SAME_POSITION
 from .car_factory import create_car
 
 
-# pylint: disable=invalid-name, attribute-defined-outside-init
+# pylint: disable=attribute-defined-outside-init
 class CarFramework(Framework):
     """
     Class for running car evaluation
@@ -26,6 +26,7 @@ class CarFramework(Framework):
         self.duration = 0.0
         self.score = 0.0
         self.settings.drawMenu = False
+        self.settings.drawFPS = False
         self.ground = None
 
         self._create_route(route)
@@ -35,37 +36,39 @@ class CarFramework(Framework):
             shapes=b2EdgeShape(vertices=[(start, 0), (end, 0)])
         )
 
-    def _create_route(self, route):
-        # TODO
+    @staticmethod
+    def _get_vertices(route):
         if route == 1:
-            self._create_route1()
+            vertices = [-1, 0.25, 1, 2, 0, 0, -1, -2, -2, -1.25, 0]
+        elif route == 2:
+            vertices = [1, 0.25, -0.7, 1.0, -1, -2, 0, 1, 0.5, 0, 1]
+        elif route == 3:
+            vertices = [0.5, -1, -0.7, 0, 1.5, 0.5, 1, 0, -0.5, 0, 1]
         else:
             raise RuntimeError("Undefined route")
 
-    def _create_route1(self):
+        return vertices
+
+    # pylint: disable=invalid-name
+    def _create_route(self, route):
         x, y1, dx = 20, 0, 5
         self._create_ground(end=x)
-        vertices = [0.25, 1, 4, 0, 0, -1, -2, -2, -1.25, 0]
-        for y2 in vertices * 2:  # iterate through vertices twice
-            self.ground.CreateEdgeFixture(
-                vertices=[(x, y1), (x + dx, y2)],
-                density=0,
-                friction=0.6,
-            )
+        vertices = self._get_vertices(route)
+        for y2 in vertices * 20:
+            self._create_edge(x1=x, x2=x + dx, y1=y1, y2=y2)
             y1 = y2
             x += dx
+        self._create_stop(x=x, y=y1)
 
-        x_offsets = [0, 80, 40, 20, 40]
-        x_lengths = [40, 40, 10, 40, 0]
-        y2s = [0, 0, 5, 0, 20]
+    def _create_edge(self, x1, x2, y1, y2):
+        self.ground.CreateEdgeFixture(
+            vertices=[(x1, y1), (x2, y2)],
+            density=0,
+            friction=0.6,
+        )
 
-        for x_offset, x_length, y2 in zip(x_offsets, x_lengths, y2s):
-            x += x_offset
-            self.ground.CreateEdgeFixture(
-                vertices=[(x, 0), (x + x_length, y2)],
-                density=0,
-                friction=0.6,
-            )
+    def _create_stop(self, x, y):
+        self._create_edge(x1=x, x2=x, y1=y, y2=100)
 
     def perform(self, genes):
         """
@@ -75,7 +78,7 @@ class CarFramework(Framework):
         try:
             self.car = create_car(genes, self.world)
         except RuntimeError:
-            return 0, 0
+            return 0, 60
 
         self.run()
 
@@ -84,14 +87,8 @@ class CarFramework(Framework):
     def run(self):
         """
         Main loop.
-
-        Continues to run while checkEvents indicates the user has
-        requested to quit.
-
         Updates the screen and tells the GUI to paint itself.
         """
-        # If any of the test constructors update the settings, reflect
-        # those changes on the GUI before running
 
         self.gui_table.updateGUI(self.settings)
 
@@ -103,18 +100,13 @@ class CarFramework(Framework):
         self.duration = 0.0
         while self.running:
             self.screen.fill((0, 0, 0))
-
             self.SimulationLoop()
-            self.viewCenter = (self.car.get_position(), 20)
-
-            if self.settings.drawMenu:
-                self.gui_app.paint(self.screen)
-
             pygame.display.flip()
             clock.tick(self.settings.hz)
-            self.fps = clock.get_fps()
             current_position = self.car.get_position()
+            self.viewCenter = (current_position, 20)
             self.duration = time.time() - start_time
+
             if current_position <= prev_position:
                 same_position_counter += 1
             else:
