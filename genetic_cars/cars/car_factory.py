@@ -102,7 +102,7 @@ def parse_genes(genes):
 
     triangles = parse_triangles(genes[7:])
 
-    return wheel_1, wheel_2, frequency, triangles
+    return (wheel_1, wheel_2), frequency, triangles
 
 
 def create_car(genes, world):
@@ -113,9 +113,9 @@ def create_car(genes, world):
     :return: Car
     """
 
-    wheel_1, wheel_2, freq, triangles = parse_genes(genes)
+    wheels, freq, triangles = parse_genes(genes)
 
-    car = Car(wheel_1, wheel_2, freq, triangles, world)
+    car = Car(wheels, freq, triangles, world)
 
     return car
 
@@ -127,7 +127,7 @@ class Car:
     """
 
     # pylint: disable=too-many-arguments
-    def __init__(self, wheel_1, wheel_2, frequency, triangles, world):
+    def __init__(self, wheels, frequency, triangles, world):
         self.wheels = []
         self.springs = []
         self.triangles = []
@@ -138,11 +138,11 @@ class Car:
         self.damping_ratio = 0.7
 
         self._create_chassis(triangles=triangles)
-        self._create_wheels(wheel_1=wheel_1, wheel_2=wheel_2)
+        self._create_wheels(wheels=wheels)
 
-    def _create_wheels(self, wheel_1, wheel_2):
-        self._create_wheel(wheel_1)
-        self._create_wheel(wheel_2)
+    def _create_wheels(self, wheels):
+        self._create_wheel(wheels[0])
+        self._create_wheel(wheels[1])
         self._join_wheels()
 
     def _create_chassis(self, triangles):

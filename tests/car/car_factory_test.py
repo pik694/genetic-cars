@@ -42,10 +42,10 @@ class CarFactoryTests(unittest.TestCase):
                  0.2, 0.6, 0.4, 0.6, 0.4, 0.6, 0.4,
                  0.5, 0.6, 0.4, 0.6, 0.4, 0.6, 0.4]
 
-        left_wheel, right_wheel, frequency, triangles = \
+        wheels, frequency, triangles = \
             parse_genes(genes)
 
-        self.assertEqual(((6.0, 4.0), 2.5), left_wheel)
-        self.assertEqual(((4.0, 6.0), 5), right_wheel)
+        self.assertEqual(((6.0, 4.0), 2.5), wheels[0])
+        self.assertEqual(((4.0, 6.0), 5), wheels[1])
         self.assertEqual(30, frequency)
         self.assertEqual([((6.0, 4.0), (6.0, 4.0), (6.0, 4.0))], triangles)
