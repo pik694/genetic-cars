@@ -6,6 +6,7 @@ import time
 import pygame
 from Box2D import b2EdgeShape
 from examples.framework import Framework
+from examples.backends.pygame_framework import GUIEnabled
 
 from . import MAX_DURATION, MAX_SAME_POSITION
 from .car_factory import create_car
@@ -90,7 +91,8 @@ class CarFramework(Framework):
         Updates the screen and tells the GUI to paint itself.
         """
 
-        self.gui_table.updateGUI(self.settings)
+        if GUIEnabled:
+            self.gui_table.updateGUI(self.settings)
 
         self.running = True
         clock = pygame.time.Clock()
@@ -99,9 +101,11 @@ class CarFramework(Framework):
         prev_position, same_position_counter = 0.0, 0
         self.duration = 0.0
         while self.running:
-            self.screen.fill((0, 0, 0))
+            if GUIEnabled:
+                self.screen.fill((0, 0, 0))
             self.SimulationLoop()
-            pygame.display.flip()
+            if GUIEnabled:
+                pygame.display.flip()
             clock.tick(self.settings.hz)
             current_position = self.car.get_position()
             self.viewCenter = (current_position, 20)
