@@ -5,8 +5,8 @@ import time
 
 import pygame
 from Box2D import b2EdgeShape
-from examples.backends.pygame_framework import GUIEnabled
 from examples.framework import Framework
+from examples.backends.pygame_framework import GUIEnabled
 
 from . import MAX_DURATION, MAX_SAME_POSITION
 from .car_factory import create_car

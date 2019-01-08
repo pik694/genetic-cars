@@ -6,11 +6,12 @@ from genetic_cars.cars.car_framework import CarFramework
 
 def main(filename):
     with open(filename) as f:
-        best = json.load(f)
+        populations = json.load(f)
 
-    genes = best['genes']
-    car_framework = CarFramework(1)
-    car_framework.perform(genes)
+    for population in populations:
+        for individual in population["population"]:
+            car_framework = CarFramework(population["route"])
+            car_framework.perform(individual["genes"])
 
 
 if __name__ == "__main__":
