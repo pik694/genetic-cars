@@ -29,14 +29,14 @@ def individual_to_dict(ind):
     :return: dict
     """
     individual = {
-        'route': ind.fitness.values[0],
+        'distance': ind.fitness.values[0],
         'time': ind.fitness.values[1],
         'genes': ind
     }
     return individual
 
 
-def population_to_dict(generation, population):
+def population_to_dict(generation, population, configuration):
     """
     Prepare json containing given population
     :param generation: current population number
@@ -48,13 +48,17 @@ def population_to_dict(generation, population):
         individual = individual_to_dict(ind)
         inds.append(individual)
     pop = {
+        "route": configuration[0],
+        "selection": configuration[1],
+        "crossover": configuration[2],
+        "mutation": configuration[3],
         "generation": generation,
-        "population": inds
+        "population": inds,
     }
     return pop
 
 
-def save_population(generation, population, file):
+def save_population(generation, population, file, route, selection, crossover, mutation):
     """
     Save population to json file
     :param generation: current population number
@@ -62,7 +66,7 @@ def save_population(generation, population, file):
     :param file: filepath
     :return: None
     """
-    pop = population_to_dict(generation, population)
+    pop = population_to_dict(generation, population, (route, selection, crossover, mutation))
     if os.path.isfile(file):
         with open(file, 'ab') as outfile:
             outfile.seek(-1, os.SEEK_END)
@@ -278,7 +282,7 @@ def run(population_size, route, selection, crossover, mutation, file):
                                   mutation=mutation, route=route)
 
     while True:
-        save_population(generation, population, file)
+        save_population(generation, population, file, route, selection, crossover, mutation)
         bests, offspring = do_selection(population)
         offspring = do_crossover(offspring)
         offspring = do_mutation(offspring)
