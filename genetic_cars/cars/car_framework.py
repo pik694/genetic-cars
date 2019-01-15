@@ -43,7 +43,7 @@ class CarFramework(Framework):
     @staticmethod
     def _get_vertices(route):
         if route == 1:
-            vertices = [-1, 0.25, 1, 2, 0, 0, -1, -2, -2, -1.25, 0]
+            vertices = [-1, 0.25, 1, 2, 0, 0, -1, -2, -2, -1.25, 0] + [1, 0.25, -0.7, 1.0, -1, -2, 0, 1, 0.5, 0, 1] + [0.5, -1, -0.7, 0, 1.5, 0.5, 1, 0, -0.5, 0, 1]
         elif route == 2:
             vertices = [1, 0.25, -0.7, 1.0, -1, -2, 0, 1, 0.5, 0, 1]
         elif route == 3:
@@ -58,7 +58,7 @@ class CarFramework(Framework):
         x, y1, dx = 20, 0, 5
         self._create_ground(end=x)
         vertices = self._get_vertices(route)
-        for y2 in vertices * 20:
+        for y2 in vertices * 2000:
             self._create_edge(x1=x, x2=x + dx, y1=y1, y2=y2)
             y1 = y2
             x += dx
