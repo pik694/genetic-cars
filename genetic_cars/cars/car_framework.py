@@ -11,6 +11,8 @@ from examples.backends.pygame_framework import GUIEnabled
 from . import MAX_DURATION, MAX_SAME_POSITION
 from .car_factory import create_car
 
+CLOCK_HZ = 1000000000000000
+
 
 # pylint: disable=attribute-defined-outside-init
 class CarFramework(Framework):
@@ -29,6 +31,7 @@ class CarFramework(Framework):
         self.settings.drawMenu = False
         self.settings.drawFPS = False
         self.ground = None
+        self.world.allowSleeping = False
 
         self._create_route(route)
 
@@ -104,12 +107,12 @@ class CarFramework(Framework):
         prev_position, same_position_counter = 0.0, 0
         self.duration = 0.0
         while self.running:
+            clock.tick(CLOCK_HZ)
             if GUIEnabled:
                 self.screen.fill((0, 0, 0))
             self.SimulationLoop()
             if GUIEnabled:
                 pygame.display.flip()
-            clock.tick(self.settings.hz)
             current_position = self.car.get_position()
             self.viewCenter = (current_position, 20)
             self.duration = time.time() - start_time
